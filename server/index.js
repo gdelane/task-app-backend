@@ -11,12 +11,16 @@ const cors = require('cors');
 
 const allowedOrigins = [
   'http://localhost:5173',
-  // add your Vercel site here once you have it, e.g.:
-  // 'https://your-vercel-site.vercel.app',
+  'https://task-app-mvp.vercel.app',
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // allow non-browser requests (e.g., Postman) where origin is undefined/null
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.has(origin)) return callback(null, true);
+    return callback(new Error(`CORS: Origin ${origin} not allowed`));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
